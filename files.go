@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 var RootDir string
@@ -32,20 +33,30 @@ func DirExists(path string) bool {
 	}
 
 	log.Panic(err)
+	return false
 }
 
-func FileExists(path string) bool {
+func FileOrDirExists(path string) bool {
 	_, err := os.Stat(path)
-
-	if err == nil {
-		return true
-	}
 
 	if os.IsNotExist(err) {
 		return false
+	} else {
+		return true
 	}
 
 	log.Panic(err)
+	return false
+}
+
+func IsDir(path string) bool {
+	fileInfo, err := os.Stat(path)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return fileInfo.IsDir()
 }
 
 func ReadFile(path string) string {
@@ -57,7 +68,11 @@ func ReadFile(path string) string {
 }
 
 func WriteFile(path string, value string) {
-	err := ioutil.WriteFile(path, ([]byte)(path), 0755)
+	dir := filepath.Dir(path)
+	if !FileOrDirExists(dir) {
+		MkDir(dir)
+	}
+	err := ioutil.WriteFile(path, ([]byte)(value), 0755)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -65,5 +80,29 @@ func WriteFile(path string, value string) {
 
 func ReadDir(path string) []os.FileInfo {
 	entries, err := ioutil.ReadDir(path)
+	if err != nil {
+		log.Panic(err)
+	}
 	return entries
+}
+
+func MkDir(path string) {
+	err := os.MkdirAll(path, os.ModeDir|0755)
+	if err != nil {
+		log.Panic(err)
+	}
+}
+
+func DeleteFileOrDir(path string) {
+	if IsDir(path) {
+		err := os.RemoveAll(path)
+		if err != nil {
+			log.Panic(err)
+		}
+	} else {
+		err := os.Remove(path)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
 }
