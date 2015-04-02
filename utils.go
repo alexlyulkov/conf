@@ -6,18 +6,18 @@ import (
 	"strings"
 )
 
-var validName *regexp.Regexp
+var validNameRe *regexp.Regexp
 
 func NameIsValid(name string) bool {
-	if validName == nil {
+	if validNameRe == nil {
 		var err error
-		validName, err = regexp.Compile(`(\w|(\w\.\w))+`)
+		validNameRe, err = regexp.Compile(`^(\w|(\w\.\w))*$`)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
 
-	if validName.MatchString(name) {
+	if validNameRe.MatchString(name) {
 		return true
 	} else {
 		return false

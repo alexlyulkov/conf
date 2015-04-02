@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func GetNode(path string) (value interface{}, err error) {
+func GetNode(path string, curDepth int, maxDepth int) (value interface{}, err error) {
 	//returns value of the node and its all subnotes
 	//subnotes are described using maps
 
@@ -16,9 +16,13 @@ func GetNode(path string) (value interface{}, err error) {
 	if IsDir(path) {
 		subnodes := ReadDir(path)
 		result := make(map[string]interface{})
+		if curDepth == maxDepth {
+			return result, nil
+		}
 		var err1 error
 		for _, node := range subnodes {
-			result[node.Name()], err1 = GetNode(path + "/" + node.Name())
+			result[node.Name()], err1 = GetNode(path+"/"+node.Name(),
+				curDepth+1, maxDepth)
 			if err1 != nil {
 				log.Panic(err1)
 			}
@@ -34,7 +38,7 @@ func CreateNode(path string, value interface{}) error {
 	//creates the node and all the subnotes described in value parameter
 	//subnodes should be described using maps
 
-	if FileOrDirExists(path) {
+	if len(path) != 0 && FileOrDirExists(path) {
 		return errors.New(ERROR_NODE_ALREADY_EXISTS)
 	}
 
@@ -42,7 +46,9 @@ func CreateNode(path string, value interface{}) error {
 	case string:
 		WriteFile(path, string(value))
 	case map[string]interface{}:
-		MkDir(path)
+		if len(path) != 0 {
+			MkDir(path)
+		}
 		for item, val := range value {
 			err := CreateNode(path+"/"+item, val)
 			if err != nil {
@@ -55,6 +61,17 @@ func CreateNode(path string, value interface{}) error {
 }
 
 func DeleteNode(path string) error {
+	if len(path) == 0 {
+		subnodes := ReadDir("")
+		var err1 error
+		for _, node := range subnodes {
+			err1 = DeleteNode(path + "/" + node.Name())
+			if err1 != nil {
+				log.Panic(err1)
+			}
+		}
+		return nil
+	}
 	if FileOrDirExists(path) {
 		DeleteFileOrDir(path)
 		return nil
@@ -68,8 +85,8 @@ func UpdateNode(path string, value interface{}) error {
 	//subnodes should be described using maps
 	//all the nodes should exist
 
-	if FileOrDirExists(path) {
-		return errors.New(ERROR_NODE__DOES_NOT_EXIST)
+	if !FileOrDirExists(path) {
+		return errors.New(ERROR_NODE_DOES_NOT_EXIST + " " + path)
 	}
 
 	switch value := value.(type) {
@@ -91,7 +108,7 @@ func UpdateNode(path string, value interface{}) error {
 func CheckSubtreeMatchesValueStructure(path string,
 	value interface{}) error {
 
-	if FileOrDirExists(path) {
+	if !FileOrDirExists(path) {
 		return errors.New(ERROR_NODE_DOES_NOT_EXIST + " " + PathToName(path))
 	}
 
@@ -119,7 +136,7 @@ func CheckInterfaceConsistsOfMapsAndStrings(value interface{}) error {
 
 	switch value := value.(type) {
 	case map[string]interface{}:
-		for item, val := range value {
+		for _, val := range value {
 			err := CheckInterfaceConsistsOfMapsAndStrings(val)
 			if err != nil {
 				return err

@@ -18,9 +18,13 @@ func InitRootDirectory(rootDir string) {
 	if err := os.Chdir(RootDir); err != nil {
 		log.Panic(err)
 	}
+	/*if RootDir[len(RootDir)-1] != '/' {
+		RootDir = RootDir + "/"
+	}*/
 }
 
 func DirExists(path string) bool {
+	path = "./" + path
 	err := os.Chdir(path)
 	defer os.Chdir(RootDir)
 
@@ -37,6 +41,7 @@ func DirExists(path string) bool {
 }
 
 func FileOrDirExists(path string) bool {
+	path = "./" + path
 	_, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
@@ -50,6 +55,7 @@ func FileOrDirExists(path string) bool {
 }
 
 func IsDir(path string) bool {
+	path = "./" + path
 	fileInfo, err := os.Stat(path)
 
 	if err != nil {
@@ -60,6 +66,7 @@ func IsDir(path string) bool {
 }
 
 func ReadFile(path string) string {
+	path = "./" + path
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Panic(err)
@@ -68,6 +75,7 @@ func ReadFile(path string) string {
 }
 
 func WriteFile(path string, value string) {
+	path = "./" + path
 	dir := filepath.Dir(path)
 	if !FileOrDirExists(dir) {
 		MkDir(dir)
@@ -79,6 +87,7 @@ func WriteFile(path string, value string) {
 }
 
 func ReadDir(path string) []os.FileInfo {
+	path = "./" + path
 	entries, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Panic(err)
@@ -87,6 +96,7 @@ func ReadDir(path string) []os.FileInfo {
 }
 
 func MkDir(path string) {
+	path = "./" + path
 	err := os.MkdirAll(path, os.ModeDir|0755)
 	if err != nil {
 		log.Panic(err)
@@ -94,6 +104,7 @@ func MkDir(path string) {
 }
 
 func DeleteFileOrDir(path string) {
+	path = "./" + path
 	if IsDir(path) {
 		err := os.RemoveAll(path)
 		if err != nil {

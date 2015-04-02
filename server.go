@@ -2,22 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	//	"strings"
-	"fmt"
+	"strconv"
 	"time"
 )
 
-type Response struct {
-	Value       string `json:"value"`
-	IsSuccess   bool   `json:"is_success"`
-	ErrorString string `json:"error_description"`
-}
-
 func StartHttpServer(address string) {
 
-	http.HandleFunc("/messages", get_message_id)
+	http.HandleFunc("/insert", Insert)
+	http.HandleFunc("/read", Read)
+	http.HandleFunc("/update", Update)
+	http.HandleFunc("/delete", Delete)
 
 	server := &http.Server{
 		Addr:           address,
@@ -33,47 +30,13 @@ func StartHttpServer(address string) {
 
 }
 
-func get_message_id(w http.ResponseWriter, r *http.Request) {
-	/*
-		var response Response
-		message := r.FormValue("message")
-		redirectingToMaster := r.FormValue("redirecting_to_master") == `true`
-		if len(message) < 1 {
-			response.ID = -1
-			response.IsSuccess = false
-			response.IsNew = false
-			response.ErrorString = "Empty message"
-		} else {
-			response = GetMessageID(message, conf, m,
-				cache, redirectingToMaster)
-		}
-		result, err := json.Marshal(response)
-		if err != nil {
-			fmt.Println("find_message error: ", err)
-			panic("qweqw")
-		}
-		if conf.Machete.DebugLogs {
-			log.Infof("get_message_id request returned: " + string(result))
-		}
-		fmt.Fprintf(w, string(result))
-
-		WorkingRequestsMutex.Lock()
-		WorkingRequests--
-		WorkingRequestsMutex.Unlock()
-		if rand.Int()%10 == 0 {
-			Statsd.Gauge("main_db.working_requests", int64(WorkingRequests), 1.0)
-		}
-	*/
-}
-
-func Create(w http.ResponseWriter, r *http.Request) {
-	var response Response
+func Insert(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
-	if len(name) == 0 {
+	/*if len(name) == 0 {
 		w.WriteHeader(400)
 		fmt.Println(w, "Node name is not specified")
 		return
-	}
+	}*/
 	if !NameIsValid(name) {
 		w.WriteHeader(400)
 		fmt.Println(w, "Name should consist only of English letters and numbers separated by dots.")
@@ -111,7 +74,6 @@ func Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func Read(w http.ResponseWriter, r *http.Request) {
-	var response Response
 	name := r.FormValue("name")
 	if len(name) == 0 {
 		w.WriteHeader(400)
@@ -124,8 +86,23 @@ func Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	depth := 1
+	depthStr := r.FormValue("depth")
+	if len(depthStr) != 0 {
+		var err error
+		depth, err = strconv.Atoi(depthStr)
+		if err != nil {
+			w.WriteHeader(400)
+			fmt.Println(w, "Depth should be a integer. "+err.Error())
+			return
+		}
+	}
+	if depth < 0 {
+		depth = 2000000000
+	}
+
 	path := NameToPath(name)
-	value, err := GetNode(path)
+	value, err := GetNode(path, 0, depth)
 	if err != nil {
 		w.WriteHeader(400)
 		fmt.Println(w, err.Error())
@@ -141,13 +118,12 @@ func Read(w http.ResponseWriter, r *http.Request) {
 }
 
 func Update(w http.ResponseWriter, r *http.Request) {
-	var response Response
 	name := r.FormValue("name")
-	if len(name) == 0 {
+	/*if len(name) == 0 {
 		w.WriteHeader(400)
 		fmt.Println(w, "Node name is not specified")
 		return
-	}
+	}*/
 	if !NameIsValid(name) {
 		w.WriteHeader(400)
 		fmt.Println(w, "Name should consist only of English letters and numbers separated by dots.")
@@ -192,7 +168,6 @@ func Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
-	var response Response
 	name := r.FormValue("name")
 	if len(name) == 0 {
 		w.WriteHeader(400)
