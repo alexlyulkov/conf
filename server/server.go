@@ -7,7 +7,6 @@
 //All the nodes values are strings.
 //Nodes are assigned using dot-separated names.
 //Names consist only of english letters and numbers.
-
 package server
 
 import (
@@ -21,7 +20,7 @@ import (
 	"github.com/alexlyulkov/conf/conf"
 )
 
-//StartHttpServer starts the server on specified address (host:port).
+//StartHttpServer starts the server with the specified address (host:port).
 func StartHttpServer(address string) {
 
 	http.HandleFunc("/insert", Insert)
@@ -44,7 +43,7 @@ func StartHttpServer(address string) {
 }
 
 //Insert creates the node and all the subnodes described in the value parameter.
-//Node name and value are taked from request POST parameters.
+//Node name and value are taked from the request POST parameters.
 //Nodes values should be string.
 //Nodes hierarchy should be described via maps (map[string]interface{}).
 //Node value (string or map) should be encoded in JSON.
@@ -86,7 +85,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 }
 
 //Read returns the node and all the subnodes values encoded in one JSON.
-//Node name is taked from request POST parameters.
+//Node name is taked from the request POST parameters.
 //Nodes hierarchy is described via maps (map[string]interface{}).
 //Node name should be dot-separated and consist only of english letters an numbers.
 //If the node doesn't exist, it returns an error.
@@ -132,8 +131,8 @@ func Read(w http.ResponseWriter, r *http.Request) {
 
 //Update updates the node and all the subnodes values using the
 //values from the 'value' parameter.
-//Node name and value are taked from request POST parameters.
-//Nodes values should be string.
+//Node name and value are taked from the request POST parameters.
+//Nodes values should be strings.
 //Nodes hierarchy should be described via maps (map[string]interface{}).
 //Node value (string or map) should be encoded in JSON.
 //Node name should be dot-separated and consist only of english letters an numbers.

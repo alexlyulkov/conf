@@ -3,7 +3,6 @@
 //It stores nodes as files and use folders to describe the hierarchy.
 //It allows to get and set entire directories using maps (map[string]interface{}).
 //All the nodes values are strings.
-
 package conf
 
 import (
@@ -44,7 +43,7 @@ func GetNode(path string, maxDepth int) (value interface{}, err error) {
 //CreateNode creates the node and all the subnodes described in the value parameter.
 //Nodes values should be string.
 //Nodes hierarchy should be described via maps (map[string]interface{})
-//CreateNode returns ant error if the specified node already exists.
+//CreateNode returns an error if the specified node already exists.
 func CreateNode(path string, value interface{}) error {
 
 	if len(path) != 0 && FileOrDirExists(path) {
@@ -69,7 +68,7 @@ func CreateNode(path string, value interface{}) error {
 	return nil
 }
 
-//DeleteNode the specified node and all the subnodes
+//DeleteNode the specified node and all the subnodes.
 func DeleteNode(path string) error {
 	if len(path) == 0 {
 		subnodes := ReadDir("")
@@ -95,7 +94,7 @@ func DeleteNode(path string) error {
 //If the node or any or the subnodes described in value parameter
 //doesn't exist, it returns an error.
 //Nodes values should be string.
-//Nodes hierarchy should be described via maps (map[string]interface{})
+//Nodes hierarchy should be described via maps (map[string]interface{}).
 func UpdateNode(path string, value interface{}) error {
 	if !FileOrDirExists(path) {
 		return errors.New(ERROR_NODE_DOES_NOT_EXIST + " " + path)
@@ -121,7 +120,7 @@ func UpdateNode(path string, value interface{}) error {
 //the tree structure.
 //If the node or any or the subnodes described in value parameter
 //doesn't exist, it returns an error.
-//Nodes hierarchy should be described via maps (map[string]interface{})
+//Nodes hierarchy should be described via maps (map[string]interface{}).
 func CheckSubtreeMatchesValueStructure(path string,
 	value interface{}) error {
 
