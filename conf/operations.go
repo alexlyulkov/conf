@@ -1,4 +1,4 @@
-//Package conf implements operation for working with configurations
+//Package conf implements operations for working with configurations
 //represented by a hierarchical data structure.
 //It stores nodes as files and use folders to describe the hierarchy.
 //It allows to get and set entire directories using maps (map[string]interface{}).
