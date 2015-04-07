@@ -1,3 +1,13 @@
+//Package server implements http server with an api for
+//working with configurations represented by
+//a hierarchical data structure.
+//It stores the data using github.com/alexlyulkov/conf/conf package.
+//It allows to get and set entire directories using
+//maps (map[string]interface{}) encoded in JSON.
+//All the nodes values are strings.
+//Nodes are assigned using dot-separated names.
+//Names consist only of english letters and numbers.
+
 package server
 
 import (
@@ -11,6 +21,7 @@ import (
 	"github.com/alexlyulkov/conf/conf"
 )
 
+//StartHttpServer starts the server on specified address (host:port).
 func StartHttpServer(address string) {
 
 	http.HandleFunc("/insert", Insert)
@@ -32,13 +43,15 @@ func StartHttpServer(address string) {
 
 }
 
+//Insert creates the node and all the subnodes described in the value parameter.
+//Node name and value are taked from request POST parameters.
+//Nodes values should be string.
+//Nodes hierarchy should be described via maps (map[string]interface{}).
+//Node value (string or map) should be encoded in JSON.
+//Node name should be dot-separated and consist only of english letters an numbers.
+//If the node already exists, it returns an error.
 func Insert(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
-	/*if len(name) == 0 {
-		w.WriteHeader(400)
-		fmt.Fprintf(w, "Node name is not specified")
-		return
-	}*/
 	if !conf.NameIsValid(name) {
 		http.Error(w, "Name should consist only of English letters and numbers separated by dots.", 400)
 		return
@@ -72,6 +85,11 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "")
 }
 
+//Read returns the node and all the subnodes values encoded in one JSON.
+//Node name is taked from request POST parameters.
+//Nodes hierarchy is described via maps (map[string]interface{}).
+//Node name should be dot-separated and consist only of english letters an numbers.
+//If the node doesn't exist, it returns an error.
 func Read(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	if len(name) == 0 {
@@ -98,7 +116,7 @@ func Read(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path := conf.NameToPath(name)
-	value, err := conf.GetNode(path, 0, depth)
+	value, err := conf.GetNode(path, depth)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -112,13 +130,17 @@ func Read(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, (string)(valueJSON))
 }
 
+//Update updates the node and all the subnodes values using the
+//values from the 'value' parameter.
+//Node name and value are taked from request POST parameters.
+//Nodes values should be string.
+//Nodes hierarchy should be described via maps (map[string]interface{}).
+//Node value (string or map) should be encoded in JSON.
+//Node name should be dot-separated and consist only of english letters an numbers.
+//If the node or any or the subnodes described in value parameter
+//doesn't exist, it returns an error.
 func Update(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
-	/*if len(name) == 0 {
-		w.WriteHeader(400)
-		fmt.Fprintf(w, "Node name is not specified")
-		return
-	}*/
 	if !conf.NameIsValid(name) {
 		http.Error(w, "Name should consist only of English letters and numbers separated by dots.", 400)
 		return
@@ -156,6 +178,10 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "")
 }
 
+//Delete deletes the specified node and all the subnodes.
+//Node name is taked from the request POST parameters.
+//Node name should be dot-separated and consist only of english letters an numbers.
+//If the node doesn't exist, it returns an error.
 func Delete(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	if len(name) == 0 {

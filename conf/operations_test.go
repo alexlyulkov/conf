@@ -51,7 +51,7 @@ func TestCreateGetInsertDelete(t *testing.T) {
 	tree["subtree1"] = subtree1
 	tree["subtree2"] = subtree2
 
-	emptyTree, err := GetNode("", 0, 10000)
+	emptyTree, err := GetNode("", 10000)
 	AssertEqual(t, err, nil)
 	AssertEqual(t, emptyTree, make(map[string]interface{}))
 	AssertUnequal(t, tree, emptyTree)
@@ -59,14 +59,14 @@ func TestCreateGetInsertDelete(t *testing.T) {
 	err = CreateNode("", tree)
 	AssertEqual(t, err, nil)
 
-	loadedTree, err := GetNode("", 0, 100000)
+	loadedTree, err := GetNode("", 100000)
 	AssertEqual(t, err, nil)
 	AssertEqual(t, tree, loadedTree)
 
 	err = CheckSubtreeMatchesValueStructure("", tree)
 	AssertEqual(t, err, nil)
 
-	loadedSubtree1, err := GetNode("subtree1", 0, 100000)
+	loadedSubtree1, err := GetNode("subtree1", 100000)
 	AssertEqual(t, err, nil)
 	AssertEqual(t, subtree1, loadedSubtree1)
 	AssertUnequal(t, subtree2, loadedSubtree1)
@@ -74,7 +74,7 @@ func TestCreateGetInsertDelete(t *testing.T) {
 	err = UpdateNode("subtree1/i3", "v3_2")
 	AssertEqual(t, err, nil)
 
-	loadedTree, err = GetNode("", 0, 10000)
+	loadedTree, err = GetNode("", 10000)
 	AssertEqual(t, err, nil)
 	AssertUnequal(t, tree, loadedTree)
 
@@ -88,7 +88,7 @@ func TestCreateGetInsertDelete(t *testing.T) {
 	err = UpdateNode("", changingTree)
 	AssertEqual(t, err, nil)
 
-	loadedTree, err = GetNode("", 0, 10000)
+	loadedTree, err = GetNode("", 10000)
 	AssertEqual(t, err, nil)
 	AssertUnequal(t, tree, loadedTree)
 
@@ -101,7 +101,7 @@ func TestCreateGetInsertDelete(t *testing.T) {
 	err = CheckSubtreeMatchesValueStructure("", tree)
 	AssertUnequal(t, err, nil)
 
-	loadedTree, err = GetNode("", 0, 10000)
+	loadedTree, err = GetNode("", 10000)
 	AssertEqual(t, err, nil)
 	AssertUnequal(t, tree, loadedTree)
 
