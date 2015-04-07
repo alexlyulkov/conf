@@ -11,5 +11,5 @@ deps:
 clean:
 	find . -name flymake_* -delete
 run: all
-	conf
+	conf -address "0.0.0.0:8080" -workdir "/var/tmp/alex_config"
 
