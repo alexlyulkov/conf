@@ -11,7 +11,7 @@ import (
 )
 
 //GetNode returns value of the node and all its subnodes.
-//maxDepth defines the maximum recursion depth
+//maxDepth defines the maximum recursion depth.
 //Nodes values are string.
 //Nodes hierarchy described via maps (map[string]interface{})
 func GetNode(path string, maxDepth int) (value interface{}, err error) {

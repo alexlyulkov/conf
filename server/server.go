@@ -3,7 +3,7 @@
 //a hierarchical data structure.
 //It stores the data using github.com/alexlyulkov/conf/conf package.
 //It allows to get and set entire directories using
-//maps (map[string]interface{}) encoded in JSON.
+//maps encoded in JSON.
 //All the nodes values are strings.
 //Nodes are assigned using dot-separated names.
 //Names consist only of english letters and numbers.
@@ -45,7 +45,7 @@ func StartHttpServer(address string) {
 //Insert creates the node and all the subnodes described in the value parameter.
 //Node name and value are taked from the request POST parameters.
 //Nodes values should be string.
-//Nodes hierarchy should be described via maps (map[string]interface{}).
+//Nodes hierarchy should be described via maps.
 //Node value (string or map) should be encoded in JSON.
 //Node name should be dot-separated and consist only of english letters an numbers.
 //If the node already exists, it returns an error.
@@ -84,9 +84,10 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "")
 }
 
-//Read returns the node and all the subnodes values encoded in one JSON.
-//Node name is taked from the request POST parameters.
-//Nodes hierarchy is described via maps (map[string]interface{}).
+//Read returns the node and all the subnodes values.
+//Depth parameter defines the maximum recursion depth.
+//Node name and depth are taked from the request POST parameters.
+//Nodes hierarchy is described via maps encoded in one JSON.
 //Node name should be dot-separated and consist only of english letters an numbers.
 //If the node doesn't exist, it returns an error.
 func Read(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +134,7 @@ func Read(w http.ResponseWriter, r *http.Request) {
 //values from the 'value' parameter.
 //Node name and value are taked from the request POST parameters.
 //Nodes values should be strings.
-//Nodes hierarchy should be described via maps (map[string]interface{}).
+//Nodes hierarchy should be described via maps.
 //Node value (string or map) should be encoded in JSON.
 //Node name should be dot-separated and consist only of english letters an numbers.
 //If the node or any or the subnodes described in value parameter
