@@ -34,31 +34,28 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	/*if len(name) == 0 {
 		w.WriteHeader(400)
-		fmt.Println(w, "Node name is not specified")
+		fmt.Fprintf(w, "Node name is not specified")
 		return
 	}*/
 	if !NameIsValid(name) {
-		w.WriteHeader(400)
-		fmt.Println(w, "Name should consist only of English letters and numbers separated by dots.")
+		http.Error(w, "Name should consist only of English letters and numbers separated by dots.", 400)
 		return
 	}
 	valueJSON := r.FormValue("value")
 	if len(valueJSON) == 0 {
-		w.WriteHeader(400)
-		fmt.Println(w, "Node value is not specified")
+		http.Error(w, "Node value is not specified", 400)
 		return
 	}
 	var value interface{}
 	err := json.Unmarshal(([]byte)(valueJSON), &value)
 	if err != nil {
-		w.WriteHeader(400)
-		fmt.Println(w, "Node value should be proper json. Can't parse node value: "+err.Error())
+		http.Error(w, "Node value should be proper json. Can't parse node value: "+err.Error(), 400)
 		return
 	}
 	err = CheckInterfaceConsistsOfMapsAndStrings(value)
 	if err != nil {
 		w.WriteHeader(400)
-		fmt.Println(w, err.Error())
+		fmt.Fprintf(w, err.Error())
 		return
 	}
 
@@ -66,23 +63,21 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	err = CreateNode(path, value)
 	if err != nil {
 		w.WriteHeader(400)
-		fmt.Println(w, err.Error())
+		fmt.Fprintf(w, err.Error())
 		return
 	}
 
-	fmt.Println(w, "")
+	fmt.Fprintf(w, "")
 }
 
 func Read(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	if len(name) == 0 {
-		w.WriteHeader(400)
-		fmt.Println(w, "Node name is not specified")
+		http.Error(w, "Node name is not specified", 400)
 		return
 	}
 	if !NameIsValid(name) {
-		w.WriteHeader(400)
-		fmt.Println(w, "Name should consist only of English letters and numbers separated by dots.")
+		http.Error(w, "Name should consist only of English letters and numbers separated by dots.", 400)
 		return
 	}
 
@@ -92,8 +87,7 @@ func Read(w http.ResponseWriter, r *http.Request) {
 		var err error
 		depth, err = strconv.Atoi(depthStr)
 		if err != nil {
-			w.WriteHeader(400)
-			fmt.Println(w, "Depth should be a integer. "+err.Error())
+			http.Error(w, "Depth should be a integer. "+err.Error(), 400)
 			return
 		}
 	}
@@ -104,8 +98,7 @@ func Read(w http.ResponseWriter, r *http.Request) {
 	path := NameToPath(name)
 	value, err := GetNode(path, 0, depth)
 	if err != nil {
-		w.WriteHeader(400)
-		fmt.Println(w, err.Error())
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
@@ -114,79 +107,70 @@ func Read(w http.ResponseWriter, r *http.Request) {
 		log.Panic(err)
 	}
 
-	fmt.Println(w, (string)(valueJSON))
+	fmt.Fprintf(w, (string)(valueJSON))
 }
 
 func Update(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	/*if len(name) == 0 {
 		w.WriteHeader(400)
-		fmt.Println(w, "Node name is not specified")
+		fmt.Fprintf(w, "Node name is not specified")
 		return
 	}*/
 	if !NameIsValid(name) {
-		w.WriteHeader(400)
-		fmt.Println(w, "Name should consist only of English letters and numbers separated by dots.")
+		http.Error(w, "Name should consist only of English letters and numbers separated by dots.", 400)
 		return
 	}
 	valueJSON := r.FormValue("value")
 	if len(valueJSON) == 0 {
-		w.WriteHeader(400)
-		fmt.Println(w, "Node value is not specified")
+		http.Error(w, "Node value is not specified", 400)
 		return
 	}
 	var value interface{}
 	err := json.Unmarshal(([]byte)(valueJSON), &value)
 	if err != nil {
-		w.WriteHeader(400)
-		fmt.Println(w, "Node value should be proper json. Can't parse node value: "+err.Error())
+		http.Error(w, "Node value should be proper json. Can't parse node value: "+err.Error(), 400)
 		return
 	}
 	err = CheckInterfaceConsistsOfMapsAndStrings(value)
 	if err != nil {
-		w.WriteHeader(400)
-		fmt.Println(w, err.Error())
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
 	path := NameToPath(name)
 	err = CheckSubtreeMatchesValueStructure(path, value)
 	if err != nil {
-		w.WriteHeader(400)
-		fmt.Println(w, err.Error())
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
 	err = UpdateNode(path, value)
 	if err != nil {
-		w.WriteHeader(400)
-		fmt.Println(w, err.Error())
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	fmt.Println(w, "")
+	fmt.Fprintf(w, "")
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	if len(name) == 0 {
-		w.WriteHeader(400)
-		fmt.Println(w, "Node name is not specified")
+		http.Error(w, "Node name is not specified", 400)
 		return
 	}
 	if !NameIsValid(name) {
-		w.WriteHeader(400)
-		fmt.Println(w, "Name should consist only of English letters and numbers separated by dots.")
+		http.Error(w, "Name should consist only of English letters and numbers separated by dots.", 400)
 		return
 	}
 
 	path := NameToPath(name)
 	err := DeleteNode(path)
 	if err != nil {
-		w.WriteHeader(400)
-		fmt.Println(w, err.Error())
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	fmt.Println(w, "")
+	fmt.Fprintf(w, "")
 }
