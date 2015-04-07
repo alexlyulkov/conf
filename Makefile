@@ -1,7 +1,9 @@
 test: clean all
 	go test -v github.com/alexlyulkov/conf/conf
+	go test -v github.com/alexlyulkov/conf/server
 coverage: clean
 	gocov test github.com/alexlyulkov/conf/conf | gocov report
+	gocov test github.com/alexlyulkov/conf/server | gocov report
 all:
 	go install github.com/alexlyulkov/conf
 deps:

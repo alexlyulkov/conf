@@ -7,8 +7,11 @@ import (
 	"path/filepath"
 )
 
+//RootDir is the working directory
 var RootDir string
 
+//InitRootDirectory Initializes and sets the working directory.
+//All the dirs and files will be in that directory
 func InitRootDirectory(rootDir string) {
 	RootDir = rootDir
 
@@ -18,28 +21,9 @@ func InitRootDirectory(rootDir string) {
 	if err := os.Chdir(RootDir); err != nil {
 		log.Panic(err)
 	}
-	/*if RootDir[len(RootDir)-1] != '/' {
-		RootDir = RootDir + "/"
-	}*/
 }
 
-func DirExists(path string) bool {
-	path = "./" + path
-	err := os.Chdir(path)
-	defer os.Chdir(RootDir)
-
-	if err == nil {
-		return true
-	}
-
-	if !os.IsNotExist(err) {
-		return false
-	}
-
-	log.Panic(err)
-	return false
-}
-
+//FileOrDirExists returns true if the specified file or dir exists
 func FileOrDirExists(path string) bool {
 	path = "./" + path
 	_, err := os.Stat(path)
@@ -54,6 +38,7 @@ func FileOrDirExists(path string) bool {
 	return false
 }
 
+//IsDir returns true if the object on the specified path is a directory
 func IsDir(path string) bool {
 	path = "./" + path
 	fileInfo, err := os.Stat(path)
@@ -65,6 +50,7 @@ func IsDir(path string) bool {
 	return fileInfo.IsDir()
 }
 
+//ReadFile returns the content of the file as a string
 func ReadFile(path string) string {
 	path = "./" + path
 	buf, err := ioutil.ReadFile(path)
@@ -74,6 +60,7 @@ func ReadFile(path string) string {
 	return string(buf)
 }
 
+//WriteFile erases the specified file and writes the value string to it
 func WriteFile(path string, value string) {
 	path = "./" + path
 	dir := filepath.Dir(path)
@@ -86,6 +73,8 @@ func WriteFile(path string, value string) {
 	}
 }
 
+//ReadDir returns FileInfo description of each
+//file and directory in the specified directory
 func ReadDir(path string) []os.FileInfo {
 	path = "./" + path
 	entries, err := ioutil.ReadDir(path)
@@ -95,6 +84,7 @@ func ReadDir(path string) []os.FileInfo {
 	return entries
 }
 
+//MkDir Creates a directory named path, along with any necessary parents
 func MkDir(path string) {
 	path = "./" + path
 	err := os.MkdirAll(path, os.ModeDir|0755)
@@ -103,6 +93,7 @@ func MkDir(path string) {
 	}
 }
 
+//DeleteFileOrDir deletes the named file or directory
 func DeleteFileOrDir(path string) {
 	path = "./" + path
 	if IsDir(path) {
