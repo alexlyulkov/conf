@@ -5,9 +5,9 @@ import (
 	"log"
 )
 
+//GetNode returns value of the node and its all subnotes
+//subnotes are described using maps
 func GetNode(path string, curDepth int, maxDepth int) (value interface{}, err error) {
-	//returns value of the node and its all subnotes
-	//subnotes are described using maps
 
 	if !FileOrDirExists(path) {
 		return "", errors.New(ERROR_NODE_DOES_NOT_EXIST)
@@ -34,9 +34,9 @@ func GetNode(path string, curDepth int, maxDepth int) (value interface{}, err er
 
 }
 
+//creates the node and all the subnotes described in value parameter
+//subnodes should be described using maps
 func CreateNode(path string, value interface{}) error {
-	//creates the node and all the subnotes described in value parameter
-	//subnodes should be described using maps
 
 	if len(path) != 0 && FileOrDirExists(path) {
 		return errors.New(ERROR_NODE_ALREADY_EXISTS)
